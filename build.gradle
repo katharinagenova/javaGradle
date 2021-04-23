@@ -13,14 +13,6 @@ dependencies {
     compile "mysql:mysql-connector-java:8.0.11"
 }
 
-// jar {
-//     manifest {
-//         attributes(
-//             'Main-Class': 'hello.HelloWorld'
-//         )
-//     }
-// }
-
 //create a single Jar with all dependencies
 task fatJar(type: Jar) {
     manifest {
@@ -33,4 +25,20 @@ task fatJar(type: Jar) {
     baseName = project.name + '-all'
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
+}
+
+task printDepsTreeInJson {
+  doLast {
+    configurations.compile.incoming.getResolutionResult().getAllDependencies().each { depResult  ->
+      println depResult.getRequested()
+    }
+  }
+}
+
+task printDepsTreeInJsonExtended {
+  doLast {
+    configurations.compile.incoming.getResolutionResult().getAllDependencies().each { depResult  ->
+      println "{\"from\":\"" + depResult.getFrom() + "\"," + "\"requested\":\"" + depResult.getRequested() + "\"}"
+    }
+  }
 }
